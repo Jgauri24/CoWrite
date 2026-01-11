@@ -84,8 +84,8 @@ CoWrite is a real-time collaborative writing platform that allows multiple users
 - JWT Authentication
 
 ## 📌 Status
-Backend authentication and document management completed.
-Next: Real-time collaboration using Socket.io (Commit 4).
+Backend authentication, document management, and real-time collaboration (WebSockets) completed.
+Next: Frontend initialization (Commit 5).
 
 ---
 
