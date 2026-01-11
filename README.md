@@ -66,14 +66,6 @@ backend/
 └── package.json
 ```
 
-## Development Progress
-
-- [x] Commit 1: Express server + MongoDB connection
-- [ ] Commit 2: User model + JWT auth
-- [ ] Commit 3: Document model + CRUD APIs
-- [ ] Commit 4: Document permissions (RBAC)
-- [ ] Commit 5: Socket.io integration
-- [ ] ... (more commits)
 
 ---
 
