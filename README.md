@@ -4,7 +4,7 @@ A Notion-like collaborative document editor built with the MERN stack + Socket.i
 
 ## Tech Stack
 
-- **Frontend**: React (Vite)
+- **Frontend**: React (Vite) + Tailwind CSS v4
 - **Backend**: Node.js + Express
 - **Database**: MongoDB (Mongoose)
 - **Real-time**: Socket.io
@@ -83,9 +83,17 @@ CoWrite is a real-time collaborative writing platform that allows multiple users
 - MongoDB
 - JWT Authentication
 
+### Frontend Setup
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
 ## 📌 Status
-Backend authentication, document management, and real-time collaboration (WebSockets) completed.
-Next: Frontend initialization (Commit 5).
+Backend and Frontend initialization completed.
+Next: Auth context and API services (Commit 6).
 
 ---
 
