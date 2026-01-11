@@ -63,11 +63,30 @@ backend/
 ├── server.js          # Express app entry point
 ├── .env               # Environment variables (not in git)
 ├── .env.example       # Template for .env
-└── package.json
-```
+# CoWrite ✍️
 
+CoWrite is a real-time collaborative writing platform that allows multiple users to write, edit, and manage shared documents seamlessly.
+
+## 🚀 Features
+- User authentication (JWT-based)
+- Secure backend architecture
+- Scalable project structure
+- Ready for real-time collaboration using WebSockets
+
+## 🛠 Tech Stack
+**Frontend**
+- React (planned)
+
+**Backend**
+- Node.js
+- Express.js
+- MongoDB
+- JWT Authentication
+
+## 📌 Status
+Backend authentication and user management completed.
+Real-time collaboration coming next.
 
 ---
 
-Built step-by-step as an internship-level project.
-# CoWrite
+Built with ❤️ for learning full-stack systems.
