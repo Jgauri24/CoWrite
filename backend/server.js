@@ -3,6 +3,7 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 const connectDB = require('./config/db');
 const authRoutes = require('./routes/auth');
+const documentRoutes = require('./routes/documents');
 
 dotenv.config();
 
@@ -17,6 +18,7 @@ app.use(express.json());
 
 
 app.use('/api/auth', authRoutes);
+app.use('/api/documents', documentRoutes);
 
 
 app.get('/api/health', (req, res) => {
