@@ -1,7 +1,4 @@
 
-//  Why a hook? React components can use this to manage document state
-//  without worrying about socket event setup/cleanup.
-
 
 import { useState, useEffect, useCallback } from 'react';
 import { getSocket } from '../services/socket';
@@ -14,9 +11,11 @@ export const useDocument = (documentId) => {
   // Active users in the document
   const [activeUsers, setActiveUsers] = useState([]);
   
-
+  // Connection and Save states
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [connectionStatus, setConnectionStatus] = useState('connected'); // connected, disconnected, reconnecting
+  const [lastSaved, setLastSaved] = useState(null);
 
   // Join the document room when component mounts
   useEffect(() => {
@@ -38,7 +37,7 @@ export const useDocument = (documentId) => {
       setIsLoading(false);
     };
 
-    // Listen for active users list (sent when we join)
+    // Listen for active users list 
     const handleActiveUsers = (users) => {
       setActiveUsers(users);
     };
@@ -58,9 +57,27 @@ export const useDocument = (documentId) => {
 
     // Listen for errors
     const handleError = (err) => {
-      setError(err.message);
-      setIsLoading(false);
+      // Don't overwrite main error if it's just a save error
+      if (!err.message.includes('save')) {
+        setError(err.message);
+        setIsLoading(false);
+      }
+      console.error('Socket Error:', err);
     };
+
+    // Listen for title changes from other users
+    const handleTitleChanged = (newTitle) => {
+      setTitle(newTitle);
+    };
+    
+    // Listen for save confirmation
+    const handleDocumentSaved = ({ savedAt }) => {
+      setLastSaved(new Date(savedAt));
+    };
+    
+    // Connection handling
+    const handleDisconnect = () => setConnectionStatus('disconnected');
+    const handleConnect = () => setConnectionStatus('connected');
 
     // Subscribe to events
     socket.on('load-document', handleLoadDocument);
@@ -68,6 +85,10 @@ export const useDocument = (documentId) => {
     socket.on('user-joined', handleUserJoined);
     socket.on('user-left', handleUserLeft);
     socket.on('error', handleError);
+    socket.on('title-changed', handleTitleChanged);
+    socket.on('document-saved', handleDocumentSaved);
+    socket.on('disconnect', handleDisconnect);
+    socket.on('connect', handleConnect);
 
     // Cleanup when component unmounts or documentId changes
     return () => {
@@ -77,6 +98,10 @@ export const useDocument = (documentId) => {
       socket.off('user-joined', handleUserJoined);
       socket.off('user-left', handleUserLeft);
       socket.off('error', handleError);
+      socket.off('title-changed', handleTitleChanged);
+      socket.off('document-saved', handleDocumentSaved);
+      socket.off('disconnect', handleDisconnect);
+      socket.off('connect', handleConnect);
     };
   }, [documentId]);
 
@@ -91,8 +116,10 @@ export const useDocument = (documentId) => {
   // Save document to database
   const saveDocument = useCallback((data) => {
     const socket = getSocket();
-    if (socket) {
+    if (socket && socket.connected) {
       socket.emit('save-document', data);
+    } else {
+      console.warn('Cannot save - socket disconnected');
     }
   }, []);
 
@@ -104,6 +131,8 @@ export const useDocument = (documentId) => {
     activeUsers,
     isLoading,
     error,
+    connectionStatus,
+    lastSaved,
     sendChanges,
     saveDocument
   };

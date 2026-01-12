@@ -107,7 +107,15 @@ const setupDocumentSocket = (io) => {
       }
     });
 
-   
+
+    socket.on('update-title', (newTitle) => {
+      const documentId = socket.currentDocumentId;
+      if (documentId) {
+        socket.to(documentId).emit('title-changed', newTitle);
+      }
+    });
+
+ 
     socket.on('save-document', async (data) => {
       const documentId = socket.currentDocumentId;
       if (!documentId) return;
@@ -139,7 +147,7 @@ const setupDocumentSocket = (io) => {
 };
 
 
-//  Helper function to handle leaving a document room
+// handle leaving a document room
 
 async function leaveDocumentRoom(socket, documentId, io) {
   // Remove from socket room
