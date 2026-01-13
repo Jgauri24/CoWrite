@@ -5,7 +5,7 @@ import { io } from 'socket.io-client';
 let socket = null;
 
 
-const SOCKET_URL = 'http://localhost:5001';
+const SOCKET_URL = 'https://cowrite-rx0h.onrender.com';
 
 
 export const connectSocket = (token) => {
