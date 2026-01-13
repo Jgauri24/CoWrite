@@ -4,6 +4,7 @@
   "description": "A Notion-like collaborative document editor built with the MERN stack + Socket.io.",
   "main": "index.js",
   "scripts": {
+    "start": "cd backend && npm start",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
