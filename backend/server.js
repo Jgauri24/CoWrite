@@ -1,4 +1,5 @@
 const express = require('express');
+const path = require('path');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const http = require('http');
@@ -23,6 +24,9 @@ app.use(cors());
 app.use(express.json());
 
 
+// Serve static files from the frontend
+app.use(express.static(path.join(__dirname, '../frontend/dist')));
+
 app.use('/api/auth', authRoutes);
 app.use('/api/documents', documentRoutes);
 
@@ -39,8 +43,13 @@ app.get('/api/health', (req, res) => {
 setupDocumentSocket(io);
 
 
-app.use((req, res) => {
-  res.status(404).json({ message: 'Route not found' });
+// Handle React routing, return all requests to React app
+app.get('*', (req, res) => {
+  // Check if it's an API request that wasn't handled
+  if (req.path.startsWith('/api')) {
+     return res.status(404).json({ message: 'API Route not found' });
+  }
+  res.sendFile(path.join(__dirname, '../frontend/dist', 'index.html'));
 });
 
 // Global error handler
