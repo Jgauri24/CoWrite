@@ -1,6 +1,6 @@
 
 
-import { useRef, useEffect, useCallback } from 'react';
+import { useRef, useEffect, useCallback, useState } from 'react';
 import { getSocket } from '../services/socket';
 
 const Editor = ({
@@ -14,6 +14,19 @@ const Editor = ({
     const isLocalChange = useRef(false);
     const lastContent = useRef(content);
 
+    // Store remote cursors: { userId: { name, index, color } }
+    const [remoteCursors, setRemoteCursors] = useState({});
+
+    // Colors for different users
+    const cursorColors = ['#ef4444', '#f59e0b', '#10b981', '#3b82f6', '#8b5cf6', '#ec4899'];
+    const getUserColor = (userId) => {
+        let hash = 0;
+        for (let i = 0; i < userId.length; i++) {
+            hash = userId.charCodeAt(i) + ((hash << 5) - hash);
+        }
+        return cursorColors[Math.abs(hash) % cursorColors.length];
+    };
+
     // Set initial content
     useEffect(() => {
         if (editorRef.current && content !== undefined) {
@@ -24,7 +37,37 @@ const Editor = ({
         }
     }, [content]);
 
-    // Listen for remote changes
+    // Handle Cursor/Selection tracking
+    useEffect(() => {
+        const handleSelectionChange = () => {
+            const selection = window.getSelection();
+            if (!selection.rangeCount || isReadOnly) return;
+
+            const range = selection.getRangeAt(0);
+            const editorNode = editorRef.current;
+
+            // Ensure selection is inside OUR editor
+            if (!editorNode?.contains(range.commonAncestorContainer)) return;
+
+
+            const cursorData = {
+                index: range.startOffset, 
+                // You might need a robust library for exact absolute position
+            };
+
+            const socket = getSocket();
+            if (socket) {
+                socket.emit('send-cursor', cursorData);
+            }
+        };
+
+        document.addEventListener('selectionchange', handleSelectionChange);
+        return () => {
+            document.removeEventListener('selectionchange', handleSelectionChange);
+        };
+    }, [isReadOnly]);
+
+
     useEffect(() => {
         const socket = getSocket();
         if (!socket) return;
@@ -50,9 +93,23 @@ const Editor = ({
                         selection.addRange(newRange);
                     }
                 } catch (e) {
-                    
+           
                 }
             }
+        };
+
+        const handleRemoteCursor = (data) => {
+            setRemoteCursors(prev => ({
+                ...prev,
+                [data.userId]: {
+                    name: data.userName,
+                    index: data.index, // We'll just show markers at the top for now as "Presence"
+                    color: getUserColor(data.userId),
+                    updatedAt: Date.now()
+                }
+            }));
+
+
         };
 
         const handleTitleChange = (newTitle) => {
@@ -60,10 +117,12 @@ const Editor = ({
         };
 
         socket.on('receive-changes', handleRemoteChanges);
+        socket.on('receive-cursor', handleRemoteCursor);
         socket.on('title-changed', handleTitleChange);
 
         return () => {
             socket.off('receive-changes', handleRemoteChanges);
+            socket.off('receive-cursor', handleRemoteCursor);
             socket.off('title-changed', handleTitleChange);
         };
     }, [onTitleChange]);
@@ -98,7 +157,20 @@ const Editor = ({
     }, [onTitleChange]);
 
     return (
-        <div className="flex-1 flex flex-col py-10 px-6 md:px-15 max-w-[900px] mx-auto w-full">
+        <div className="flex-1 flex flex-col py-10 px-6 md:px-15 max-w-[900px] mx-auto w-full relative">
+            {/* Active remote cursors indicators (Simple Presence Header) */}
+            <div className="absolute top-2 right-6 flex gap-2">
+                {Object.values(remoteCursors).map((cursor) => (
+                    <div
+                        key={cursor.name}
+                        className="text-xs px-2 py-1 rounded-full text-white shadow-sm transition-all animate-in fade-in zoom-in"
+                        style={{ backgroundColor: cursor.color }}
+                    >
+                        {cursor.name} is typing...
+                    </div>
+                ))}
+            </div>
+
             {/* Document Title */}
             <input
                 type="text"
@@ -123,8 +195,8 @@ const Editor = ({
           [&_h2]:text-xl [&_h2]:font-semibold [&_h2]:my-3
           [&_p]:mb-3
           [&_ul]:ml-6 [&_ul]:mb-3 [&_ol]:ml-6 [&_ol]:mb-3
-          [&_code]:font-mono [&_code]:bg-[var(--color-sidebar)] [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:rounded [&_code]:text-sm
-          [&_pre]:bg-[var(--color-sidebar)] [&_pre]:p-4 [&_pre]:rounded-lg [&_pre]:overflow-x-auto [&_pre]:my-4
+          [&_code]:font-mono [&_code]:bg-muted [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:rounded [&_code]:text-sm
+          [&_pre]:bg-muted [&_pre]:p-4 [&_pre]:rounded-lg [&_pre]:overflow-x-auto [&_pre]:my-4
           [&_pre_code]:bg-transparent [&_pre_code]:p-0"
             />
         </div>

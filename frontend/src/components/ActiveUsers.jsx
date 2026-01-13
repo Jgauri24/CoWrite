@@ -29,16 +29,16 @@ const ActiveUsers = ({ users = [] }) => {
           key={user.id}
           title={user.name}
           style={{ backgroundColor: getColor(user.id) }}
-          className={`w-8 h-8 rounded-full text-white flex items-center justify-center text-xs font-semibold border-2 border-[var(--color-card)] 
+          className={`w-8 h-8 rounded-full text-white flex items-center justify-center text-xs font-bold border-2 border-background shadow-sm
             ${index > 0 ? '-ml-2' : ''} 
-            hover:scale-110 hover:z-10 transition-transform cursor-default`}
+            hover:scale-110 hover:z-10 transition-transform cursor-default relative`}
         >
           {user.name?.charAt(0).toUpperCase() || '?'}
         </div>
       ))}
 
       {remainingCount > 0 && (
-        <div className="w-8 h-8 rounded-full bg-[var(--color-border)] text-[var(--color-text-secondary)] flex items-center justify-center text-xs font-semibold -ml-2 border-2 border-[var(--color-card)]">
+        <div className="w-8 h-8 rounded-full bg-muted text-muted-foreground flex items-center justify-center text-xs font-bold -ml-2 border-2 border-background shadow-sm">
           +{remainingCount}
         </div>
       )}

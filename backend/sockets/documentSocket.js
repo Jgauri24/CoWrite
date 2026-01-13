@@ -12,12 +12,7 @@ const setupDocumentSocket = (io) => {
   io.on('connection', (socket) => {
     console.log(`✅ User connected: ${socket.user.name} (${socket.id})`);
 
-    /**
-     * JOIN DOCUMENT ROOM
-     * 
-     * When a user opens a document, they join its "room".
-     * This allows us to broadcast changes only to users in the same document.
-     */
+    
     socket.on('join-document', async (documentId) => {
       try {
         // Verify user has access to this document
@@ -134,6 +129,18 @@ const setupDocumentSocket = (io) => {
       }
     });
 
+
+    socket.on('send-cursor', (cursorData) => {
+      const documentId = socket.currentDocumentId;
+      if (documentId) {
+        // Broadcast to others in the room
+        socket.to(documentId).emit('receive-cursor', {
+          userId: socket.user.id,
+          userName: socket.user.name,
+          ...cursorData
+        });
+      }
+    });
 
     socket.on('disconnect', async () => {
       console.log(`❌ User disconnected: ${socket.user.name}`);

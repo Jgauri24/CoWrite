@@ -45,15 +45,13 @@ const Topbar = () => {
 
             {/* Right side */}
             <div className="flex items-center gap-3">
-                {/* User info */}
+                {/* User info */}z
                 <div className="flex items-center gap-2.5 px-3 py-1.5 rounded-md bg-muted">
                     <div className="w-7 h-7 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xs font-semibold">
                         {user?.name?.charAt(0).toUpperCase() || 'U'}
                     </div>
                     <span className="text-sm font-medium hidden sm:block">{user?.name || 'User'}</span>
                 </div>
-
-              
 
                 {/* Logout */}
                 <button

@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, FileText, Users } from 'lucide-react';
+import { Plus, FileText, Users, Trash2 } from 'lucide-react';
 import { documentsAPI } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 
@@ -88,7 +88,7 @@ const Sidebar = ({ currentDocId, onDocumentSelect }) => {
                                     navigate(`/document/${doc._id}`);
                                     onDocumentSelect?.(doc._id);
                                 }}
-                                className={`flex items-center gap-2.5 px-2.5 py-2.5 rounded-md cursor-pointer transition-colors
+                                className={`group flex items-center gap-2.5 px-2.5 py-2.5 rounded-md cursor-pointer transition-colors
                                     ${doc._id === currentDocId
                                         ? 'bg-primary text-primary-foreground'
                                         : 'hover:bg-accent hover:text-accent-foreground'
@@ -101,6 +101,21 @@ const Sidebar = ({ currentDocId, onDocumentSelect }) => {
                                         {formatTime(doc.updatedAt)}
                                     </span>
                                 </div>
+                                <button
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        if (confirm('Are you sure you want to delete this document?')) {
+                                            documentsAPI.delete(doc._id).then(() => {
+                                                setDocuments(docs => docs.filter(d => d._id !== doc._id));
+                                                if (doc._id === currentDocId) navigate('/');
+                                            });
+                                        }
+                                    }}
+                                    className="opacity-0 group-hover:opacity-100 p-1.5 hover:bg-destructive hover:text-destructive-foreground rounded transition-all"
+                                    title="Delete"
+                                >
+                                    <Trash2 size={14} />
+                                </button>
                             </li>
                         ))}
                     </ul>

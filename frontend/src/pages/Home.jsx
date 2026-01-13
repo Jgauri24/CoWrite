@@ -26,20 +26,24 @@ const Home = () => {
                 <Sidebar />
 
                 {/* Empty State / Welcome */}
-                <main className="flex-1 flex items-center justify-center p-10 bg-[var(--color-bg)]">
-                    <div className="text-center p-12 max-w-[400px] animate-fadeIn">
-                        <div className="w-20 h-20 rounded-full bg-[var(--color-sidebar)] flex items-center justify-center mx-auto mb-6 text-[var(--color-accent)]">
-                            <FileText size={48} strokeWidth={1.5} />
+                <main className="flex-1 flex items-center justify-center p-10 bg-[var(--color-bg)] relative overflow-hidden">
+                    {/* Background decoration */}
+                    <div className="absolute inset-0 bg-gradient-to-tr from-blue-50/50 via-transparent to-violet-50/50 pointer-events-none" />
+
+                    <div className="relative text-center p-12 max-w-[480px] animate-in fade-in zoom-in duration-500">
+                        <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-indigo-50 to-blue-50 border border-indigo-100 flex items-center justify-center mx-auto mb-8 shadow-sm">
+                            <FileText size={48} className="text-indigo-600/80" strokeWidth={1.5} />
                         </div>
-                        <h2 className="text-2xl font-bold mb-3 text-[var(--color-text)]">Welcome to CoWrite</h2>
-                        <p className="text-[var(--color-text-secondary)] mb-8">
-                            Create a new document or select one from the sidebar to get started.
+                        <h2 className="text-3xl font-bold mb-4 tracking-tight text-[var(--color-text)]">Welcome to CoWrite</h2>
+                        <p className="text-[var(--color-text-secondary)] text-lg mb-10 leading-relaxed text-balance">
+                            Your minimalist workspace for thoughts and ideas. <br />
+                            Select a document or create a new one to begin.
                         </p>
                         <button
                             onClick={handleNewDocument}
-                            className="flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium text-white bg-[var(--color-accent)] hover:bg-[var(--color-accent-hover)] rounded-md transition-colors mx-auto"
+                            className="group flex items-center justify-center gap-2 px-6 py-3 text-base font-medium text-primary-foreground bg-primary hover:bg-primary/90 rounded-full transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5 mx-auto"
                         >
-                            <Plus size={18} />
+                            <Plus size={20} className="group-hover:rotate-90 transition-transform duration-300" />
                             Create New Document
                         </button>
                     </div>

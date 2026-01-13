@@ -4,11 +4,10 @@ import { useState, useEffect, useCallback } from 'react';
 import { getSocket } from '../services/socket';
 
 export const useDocument = (documentId) => {
-  // Document content and metadata
+
   const [content, setContent] = useState(null);
   const [title, setTitle] = useState('');
   
-  // Active users in the document
   const [activeUsers, setActiveUsers] = useState([]);
   
   // Connection and Save states
@@ -37,12 +36,11 @@ export const useDocument = (documentId) => {
       setIsLoading(false);
     };
 
-    // Listen for active users list 
     const handleActiveUsers = (users) => {
       setActiveUsers(users);
     };
 
-    // Listen for new user joining
+   
     const handleUserJoined = ({ user }) => {
       setActiveUsers((prev) => {
         if (prev.some((u) => u.id === user.id)) return prev;
@@ -50,12 +48,12 @@ export const useDocument = (documentId) => {
       });
     };
 
-    // Listen for user leaving
+ 
     const handleUserLeft = ({ user }) => {
       setActiveUsers((prev) => prev.filter((u) => u.id !== user.id));
     };
 
-    // Listen for errors
+
     const handleError = (err) => {
       // Don't overwrite main error if it's just a save error
       if (!err.message.includes('save')) {
@@ -70,7 +68,7 @@ export const useDocument = (documentId) => {
       setTitle(newTitle);
     };
     
-    // Listen for save confirmation
+   
     const handleDocumentSaved = ({ savedAt }) => {
       setLastSaved(new Date(savedAt));
     };

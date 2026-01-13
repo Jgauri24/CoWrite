@@ -3,6 +3,7 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useState, useEffect, useCallback } from 'react';
 import Editor from '../components/Editor';
+import Toolbar from '../components/Toolbar';
 import ActiveUsers from '../components/ActiveUsers';
 import SaveStatus from '../components/SaveStatus';
 import { useDocument } from '../hooks/useDocument';
@@ -60,7 +61,7 @@ const DocumentPage = () => {
         }, 500);
     }, [content, saveDocument, setTitle]);
 
-  
+
     useEffect(() => {
         return () => {
             clearTimeout(window.saveTimeout);
@@ -114,15 +115,25 @@ const DocumentPage = () => {
 
                 <div className="flex items-center gap-3">
                     <ActiveUsers users={activeUsers} />
-                    <button className="flex items-center gap-2 px-3 py-2 text-sm font-medium border border-[var(--color-border)] rounded-md hover:bg-[var(--color-sidebar)] transition-colors">
+                    <button
+                        onClick={() => {
+                            navigator.clipboard.writeText(window.location.href);
+                            setSaveStatus('copied');
+                            setTimeout(() => setSaveStatus('saved'), 2000);
+                        }}
+                        className="flex items-center gap-2 px-3 py-2 text-sm font-medium border border-[var(--color-border)] rounded-md hover:bg-[var(--color-sidebar)] transition-colors"
+                    >
                         <Share2 size={16} />
-                        <span className="hidden sm:inline">Share</span>
+                        <span className="hidden sm:inline">
+                            {saveStatus === 'copied' ? 'Copied!' : 'Share'}
+                        </span>
                     </button>
                 </div>
             </header>
 
             {/* Editor */}
-            <main className="flex-1 overflow-y-auto bg-[var(--color-bg)]">
+            <main className="flex-1 overflow-y-auto bg-[var(--color-bg)] flex flex-col">
+                <Toolbar />
                 <Editor
                     content={typeof content === 'string' ? content : ''}
                     title={title}
