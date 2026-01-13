@@ -43,9 +43,8 @@ app.get('/api/health', (req, res) => {
 setupDocumentSocket(io);
 
 
-// Handle React routing, return all requests to React app
 app.get('*', (req, res) => {
-  // Check if it's an API request that wasn't handled
+
   if (req.path.startsWith('/api')) {
      return res.status(404).json({ message: 'API Route not found' });
   }
