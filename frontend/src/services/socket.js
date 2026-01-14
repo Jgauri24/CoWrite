@@ -5,7 +5,8 @@ import { io } from 'socket.io-client';
 let socket = null;
 
 
-const SOCKET_URL = 'https://cowrite-rx0h.onrender.com';
+// Use environment variable or window.location.origin (which works with proxy and same-origin prod)
+const SOCKET_URL = (import.meta.env.VITE_API_URL || window.location.origin).replace(/\/$/, '');
 
 
 export const connectSocket = (token) => {

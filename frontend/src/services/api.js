@@ -1,9 +1,10 @@
 
 import axios from 'axios';
 
-const API_URL = 'https://cowrite-rx0h.onrender.com';
+// Use environment variable or default to same-origin for production monolithic deployment
+const API_URL = import.meta.env.VITE_API_URL || window.location.origin;
 const api = axios.create({
-  baseURL: `${API_URL}/api`,
+  baseURL: `${API_URL.replace(/\/$/, '')}/api`,
   headers: {
     'Content-Type': 'application/json'
   }

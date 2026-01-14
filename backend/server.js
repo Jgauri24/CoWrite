@@ -14,22 +14,26 @@ dotenv.config();
 
 const app = express();
 const server = http.createServer(app);
+
+// Configure Socket.io with robust CORS for production
 const io = new Server(server, {
-  cors: {}});
+  cors: {
+    origin: "*", 
+    methods: ["GET", "POST"]
+  }
+});
 
 connectDB();
 
 app.use(cors());
-
 app.use(express.json());
 
-
 // Serve static files from the frontend
-app.use(express.static(path.join(__dirname, '../frontend/dist')));
+const distPath = path.resolve(__dirname, '../frontend/dist');
+app.use(express.static(distPath));
 
 app.use('/api/auth', authRoutes);
 app.use('/api/documents', documentRoutes);
-
 
 app.get('/api/health', (req, res) => {
   res.json({
@@ -42,13 +46,15 @@ app.get('/api/health', (req, res) => {
 // Setup socket logic
 setupDocumentSocket(io);
 
-
+// Catch-all route for SPA
 app.get('*', (req, res) => {
-
   if (req.path.startsWith('/api')) {
-     return res.status(404).json({ message: 'API Route not found' });
+    return res.status(404).json({ message: 'API Route not found' });
   }
-  res.sendFile(path.join(__dirname, '../frontend/dist', 'index.html'));
+  
+  const indexPath = path.resolve(distPath, 'index.html');
+  console.log(`[Server] Serving index.html for path: ${req.path}`);
+  res.sendFile(indexPath);
 });
 
 // Global error handler
